@@ -1,0 +1,34 @@
+# =============================================================================
+#  Release Assets and Homebrew's Tap
+# =============================================================================
+# This workflow will build the binaries and push the archives to the assets in
+# the releases page if a release was created. Then pushes the tap config file
+# for Homebrew tap. See: ../../.goreleaser.yml
+name: Release
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - created
+    tags:
+      - 'v*'
+jobs:
+  goreleaser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: release --config .goreleaser.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

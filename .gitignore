@@ -1,0 +1,3 @@
+# Ignore distribution/binary release directory
+dist/
+bin/

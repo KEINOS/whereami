@@ -1,0 +1,109 @@
+# =============================================================================
+#  Configuration for `goreleaser`.
+# =============================================================================
+#  For local-test run:
+#    $ goreleaser release --snapshot --skip-publish --rm-dist
+#    $ # *Note: Check the ./bin/ dir after ran.
+#
+#  Make sure to check the documentation as well at:
+#    https://goreleaser.com/customization/
+# =============================================================================
+before:
+  hooks:
+    - go mod download
+# Name to use on test release with --snapshot option.
+snapshot:
+  name_template: '{{ .Version }}'
+
+# Directory name to distribute
+dist: bin
+
+# Settings to build the binaries.
+builds:
+  -
+    # Target directory of main.go package
+    main: ./cmd/whereami
+    # Output binary name
+    binary: whereami
+    env:
+      - CGO_ENABLED=0
+    # Target OS
+    goos:
+      - linux
+      - windows
+      - darwin
+    # Target architectures
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    # Variant for ARM32
+    goarm:
+      - "5"
+      - "6"
+      - "7"
+    # Ignore ARM32/ARM64 build for both macOS and Windows
+    ignore:
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+    # Build the app as static binary and embed version and commit info
+    ldflags:
+      - -s -w -extldflags '-static' -X 'main.version={{.Version}}' -X 'main.commit={{ .ShortCommit }}'
+
+# macOS universal binaries for both arm64 and amd64
+universal_binaries:
+  -
+    name_template: 'whereami'
+    # Combine arm64 and amd64 as a single binary and remove each
+    replace: true
+
+# Archiving the built binaries
+archives:
+  -
+    replacements:
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+      - goos: darwin
+        format: zip
+
+# Create checksum file of archived files
+checksum:
+  name_template: 'checksums.txt'
+
+# Release/update Homebrew tap repository
+brews:
+  -
+    # Name of the Homebrew package: /<TAP REPO ROOT DIR>/Formula/<name>.rb
+    name: whereami
+    # Target repo to tap: KEINOS/homebrew-apps
+    tap:
+      owner: KEINOS
+      name: homebrew-apps
+    # Target directory: KEINOS/homebrew-apps/Formula
+    folder: Formula
+    # URL of the archive in releases page
+    url_template: "https://github.com/KEINOS/whereami/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    # Author info to commit to the tap repo
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    # Message to display on `brew search` or `brew info`
+    description: "This is a command line utility that prints the current global/public IP address."
+    homepage: "https://github.com/KEINOS/whereami/"
+    # Let brew command pull the archive via cURL
+    download_strategy: CurlDownloadStrategy
+    # Let brew command instll the binary as `whereami`
+    install: |
+      bin.install "whereami"
+    # Smoke test to run after install
+    test: |
+      system "#{bin}/whereami --version"
