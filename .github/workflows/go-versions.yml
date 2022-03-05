@@ -1,4 +1,4 @@
-name: go1.14+
+name: go1.16+
 
 on:
   workflow_dispatch:
@@ -20,62 +20,50 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Create image tag
+      - name: Create image tag from file hash
+        uses: KEINOS/gh-action-hash-for-cache@main
         id: imagetag
-        run: |
-          HASH_IMAGE=${{ hashFiles('./.github/Dockerfile') }}
-          VARIANT=$(TZ=UTC-9 date '+%Y%m')
-          TAG="${HASH_IMAGE:0:7}:${VARIANT}"
-          PATH_TAR=${{ env.PATH_CACHE }}"/tar"
-          echo "::set-output name=TAG::${TAG}"
-          echo "::set-output name=PATH_TAR::${PATH_TAR}"
+        with:
+          path: |
+            ./.github/Dockerfile
+          variant: $(TZ=UTC-9 date '+%Y%m')
 
-      - name: Cache or restore image archive
+      - name: Enable Cache
         id: cache
         uses: actions/cache@v2
         with:
           path: ${{ env.PATH_CACHE }}
-          key: ${{ steps.imagetag.outputs.TAG }}
+          key: ${{ steps.imagetag.outputs.hash }}
 
-      - name: Load Docker images if exist
+      - name: Load cached Docker images
         if: steps.cache.outputs.cache-hit == 'true'
         run: |
-          docker load --input ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_14_1.tar
-          docker load --input ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_15_1.tar
-          docker load --input ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_16_1.tar
-          docker load --input ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_17_1.tar
-          docker load --input ${{ steps.imagetag.outputs.PATH_TAR }}/github_latest_1.tar
+          docker load --input ${{ steps.imagetag.outputs.hash }}/github_v1_16_1.tar
+          docker load --input ${{ steps.imagetag.outputs.hash }}/github_v1_17_1.tar
+          docker load --input ${{ steps.imagetag.outputs.hash }}/github_latest_1.tar
 
-      - name: Pull base images if no-exist
+      - name: Pull base images if no-cache
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           : # Pull images one-by-one for stability
-          docker pull golang:1.14-alpine
-          docker pull golang:1.15-alpine
           docker pull golang:1.16-alpine
           docker pull golang:1.17-alpine
           docker pull golang:alpine
 
-      - name: Build Docker images if no-exists
+      - name: Build Docker images if no-cache
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${{ steps.imagetag.outputs.PATH_TAR }}
+          mkdir -p ${{ steps.imagetag.outputs.hash }}
           : # Build container images
           docker-compose --file ./.github/docker-compose.yml build
 
-      - name: Save built images if no-exists
+      - name: Save built images if no-cache
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          docker save --output ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_14_1.tar github_v1_14:latest
-          docker save --output ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_15_1.tar github_v1_15:latest
-          docker save --output ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_16_1.tar github_v1_16:latest
-          docker save --output ${{ steps.imagetag.outputs.PATH_TAR }}/github_v1_17_1.tar github_v1_17:latest
-          docker save --output ${{ steps.imagetag.outputs.PATH_TAR }}/github_latest_1.tar github_latest:latest
+          docker save --output ${{ steps.imagetag.outputs.hash }}/github_v1_16_1.tar github_v1_16:latest
+          docker save --output ${{ steps.imagetag.outputs.hash }}/github_v1_17_1.tar github_v1_17:latest
+          docker save --output ${{ steps.imagetag.outputs.hash }}/github_latest_1.tar github_latest:latest
 
-      - name: Run tests on Go 1.14
-        run: docker-compose --file ./.github/docker-compose.yml run v1_14
-      - name: Run tests on Go 1.15
-        run: docker-compose --file ./.github/docker-compose.yml run v1_15
       - name: Run tests on Go 1.16
         run: docker-compose --file ./.github/docker-compose.yml run v1_16
       - name: Run tests on Go 1.17

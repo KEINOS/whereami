@@ -71,11 +71,11 @@ linters:
     - staticcheck # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
     - structcheck # Finds unused struct fields
     - stylecheck
+    #- testpackage # Limit use unexported functions and methods from source code in tests
+    - thelper     # Enforce to call 't.Helper()' in the test helper function
     - typecheck   # Like the front-end of a Go compiler, parses and type-checks Go code
     - unconvert   # Detect unnecessary type conversions
     - unused      # Checks Go code for unused constants, variables, functions and types
-    #- testpackage # Limit use unexported functions and methods from source code in tests
-    - thelper     # Enforce to call 't.Helper()' in the test helper function
     - varcheck    # Finds unused global variables and constants
     - whitespace  # Limit unnecessary newlines at the start and end of functions, if, for, etc
     - wsl         # Enforce empty lines at the right places to make code more readable.
@@ -92,6 +92,17 @@ linters-settings:
     # report about not checking of errors in type assertions: `a := b.(MyStruct)`;
     # default is false: such cases aren't reported by default.
     check-type-assertions: true
+  errorlint:
+    # Report non-wrapping error creation using fmt.Errorf
+    errorf: true
+  forbidigo:
+    # Forbid the following identifiers
+    forbid:
+      - fmt.Errorf # consider errors.Errorf in github.com/pkg/errors
+      - fmt.Print.* # too much log noise
+      - ginkgo\\.F.* # these are used just for local development
+    # Exclude godoc examples from forbidigo checks.  Default is true.
+    exclude_godoc_examples: false
   funlen:
     lines: 60
     statements: 40
@@ -149,6 +160,9 @@ linters-settings:
     line-length: 120
     # tab width in spaces. Default to 1.
     tab-width: 1
+  makezero:
+    # Allow only slices initialized with a length of zero. Default is false.
+    always: false
   maligned:
     # print struct with more effective memory layout or not, false by default
     suggest-new: true
@@ -172,12 +186,6 @@ linters-settings:
     require-explanation: true
     # Enable to require nolint directives to mention the specific linter being suppressed. Default is false.
     require-specific: true
-  unused:
-    # treat code as a program (not a library) and report unused exported identifiers; default is false.
-    # XXX: if you enable this setting, unused will report a lot of false-positives in text editors:
-    # if it's called for subdir of a project it can't find funcs usages. All text editor integrations
-    # with golangci-lint call it on a directory with the changed file.
-    check-exported: false
   revive:
     # see https://github.com/mgechev/revive#available-rules for details.
     ignore-generated-header: true
@@ -199,6 +207,12 @@ linters-settings:
       first: true
       name: true
       begin: true
+  unused:
+    # treat code as a program (not a library) and report unused exported identifiers; default is false.
+    # XXX: if you enable this setting, unused will report a lot of false-positives in text editors:
+    # if it's called for subdir of a project it can't find funcs usages. All text editor integrations
+    # with golangci-lint call it on a directory with the changed file.
+    check-exported: false
   whitespace:
     multi-if: false   # Enforces newlines (or comments) after every multi-line if statement
     multi-func: false # Enforces newlines (or comments) after every multi-line function signature
@@ -221,17 +235,3 @@ linters-settings:
     force-err-cuddling: false
     # Allow leading comments to be separated with empty liens
     allow-separated-leading-comment: false
-  errorlint:
-    # Report non-wrapping error creation using fmt.Errorf
-    errorf: true
-  makezero:
-    # Allow only slices initialized with a length of zero. Default is false.
-    always: false
-  forbidigo:
-    # Forbid the following identifiers
-    forbid:
-      - fmt.Errorf # consider errors.Errorf in github.com/pkg/errors
-      - fmt.Print.* # too much log noise
-      - ginkgo\\.F.* # these are used just for local development
-    # Exclude godoc examples from forbidigo checks.  Default is true.
-    exclude_godoc_examples: false

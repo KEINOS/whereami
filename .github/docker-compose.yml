@@ -9,7 +9,7 @@
 #
 # Recommended usage:
 #   docker-compose --file ./.github/docker-compose.yml run tidy && \
-#   docker-compose --file ./.github/docker-compose.yml run 1.14
+#   docker-compose --file ./.github/docker-compose.yml run v1_17
 #
 # NOT recommended to run all tests at once whith "up":
 #   docker-compose --file ./.github/docker-compose.yml up
@@ -21,11 +21,11 @@ services:
       context: ..
       dockerfile: ./.github/Dockerfile
       args:
-        VARIANT: 1.14-alpine
+        VARIANT: 1.16-alpine
     volumes:
       - ..:/workspaces
     entrypoint: [ "./.github/go-mod-tidy.sh" ]
-  # Service v1_14 runs the tests on Go v1.14
+  # Service v1_14 runs the tests on Go v1.14 (not supported)
   v1_14:
     build:
       context: ..
@@ -34,7 +34,7 @@ services:
         VARIANT: 1.14-alpine
     volumes:
       - ..:/workspaces
-  # Service v1_14 runs the tests on Go v1.15
+  # Service v1_15 runs the tests on Go v1.15 (not supported)
   v1_15:
     build:
       context: ..
@@ -43,7 +43,7 @@ services:
         VARIANT: 1.15-alpine
     volumes:
       - ..:/workspaces
-  # Service v1_14 runs the tests on Go v1.15
+  # Service v1_16 runs the tests on Go v1.16
   v1_16:
     build:
       context: ..
@@ -52,7 +52,7 @@ services:
         VARIANT: 1.16-alpine
     volumes:
       - ..:/workspaces
-  # Service v1_14 runs the tests on Go v1.16
+  # Service v1_17 runs the tests on Go v1.17
   v1_17:
     build:
       context: ..
@@ -61,7 +61,7 @@ services:
         VARIANT: 1.17-alpine
     volumes:
       - ..:/workspaces
-  # Service v1_14 runs the tests on latest Go docker image
+  # Service latest runs the tests on latest Go docker image
   latest:
     build:
       context: ..
