@@ -7,6 +7,7 @@ import (
 	"github.com/KEINOS/whereami/pkg/provider/providers/inetipinfo"
 	"github.com/KEINOS/whereami/pkg/provider/providers/ipinfoio"
 	"github.com/KEINOS/whereami/pkg/provider/providers/toolpageorg"
+	"github.com/KEINOS/whereami/pkg/provider/providers/whatismyipcom"
 )
 
 // Provider is the interface which each provider package must implement.
@@ -24,9 +25,10 @@ type Provider interface {
 // Note that if you implement a new provider, you must add it in this function.
 func GetAll() []Provider {
 	return []Provider{
-		ipinfoio.New(),    // ipinfo.io
-		inetipinfo.New(),  // inet-ip.info
-		inetcluecom.New(), // inetclue.com
-		toolpageorg.New(), // toolpage.org
+		ipinfoio.New(),      // IPInfo.io
+		inetipinfo.New(),    // Inet-IP.info
+		inetcluecom.New(),   // InetClue.com
+		toolpageorg.New(),   // ToolPage.org
+		whatismyipcom.New(), // WhatIsMyIP.com
 	}
 }

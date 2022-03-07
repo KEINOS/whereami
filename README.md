@@ -63,5 +63,6 @@ We would like to thank the following service providers that this command uses to
 - [https://inet-ip.info/](https://inet-ip.info/)
 - [http://inetclue.com/](http://inetclue.com/)
 - [https://toolpage.org/](https://en.toolpage.org/tool/ip-address)
+- [https://whatismyip.com/](https://www.whatismyip.com/)
 
 > **This command requests these providers in random order and returns the first IP address with the same response**. (As soon as 3 of the same IP address are returned, the command stops and returns that IP address.)
