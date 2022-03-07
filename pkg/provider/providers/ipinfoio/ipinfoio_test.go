@@ -14,7 +14,7 @@ import (
 	"github.com/zenizh/go-capturer"
 )
 
-func TestGet_golden(t *testing.T) {
+func TestGetIP_golden(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
 			t.Fatal(err)
@@ -23,7 +23,7 @@ func TestGet_golden(t *testing.T) {
 	defer dummySrv.Close()
 
 	cli := ipinfoio.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 
 	// Test
 	ip, err := cli.GetIP()
@@ -45,7 +45,7 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 	defer dummySrv.Close()
 
 	cli := ipinfoio.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 
 	// Backup and defer restore inetipinfo.LogInfo.
 	oldLogInfo := ipinfoio.LogInfo
@@ -69,7 +69,7 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 
 func TestGet_error_no_URL(t *testing.T) {
 	cli := ipinfoio.New()
-	cli.URL("") // Set empty URL
+	cli.SetURL("") // Set empty URL
 
 	// Test
 	out := capturer.CaptureOutput(func() {
@@ -80,7 +80,7 @@ func TestGet_error_no_URL(t *testing.T) {
 		assert.Contains(t, err.Error(), "failed to GET HTTP request:")
 	})
 
-	assert.Empty(t, out)
+	assert.Empty(t, out, "it should not print anything on error")
 }
 
 func TestGet_error_response(t *testing.T) {
@@ -91,7 +91,7 @@ func TestGet_error_response(t *testing.T) {
 	defer dummySrv.Close()
 
 	cli := ipinfoio.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 	t.Log("Dummy server:", dummySrv.URL)
 
 	// Test
@@ -105,7 +105,7 @@ func TestGet_error_response(t *testing.T) {
 		assert.Contains(t, err.Error(), "invalid request")
 	})
 
-	assert.Empty(t, out)
+	assert.Empty(t, out, "it should not print anything on error")
 }
 
 func TestGet_error_read_response(t *testing.T) {
@@ -128,7 +128,7 @@ func TestGet_error_read_response(t *testing.T) {
 	}
 
 	cli := ipinfoio.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 
 	// Test
 	ip, err := cli.GetIP()

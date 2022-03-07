@@ -20,7 +20,7 @@ func ExampleGetAll() {
 	dummyURL, closer := getDummyServerURL()
 	defer closer()
 
-	p.URL(dummyURL) // Override the default API endpoint URL.
+	p.SetURL(dummyURL) // Override the default API endpoint URL.
 
 	// Get the current global/public IP address
 	ip, err := p.GetIP()

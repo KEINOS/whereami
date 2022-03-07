@@ -38,9 +38,9 @@ jobs:
       - name: Load cached Docker images
         if: steps.cache.outputs.cache-hit == 'true'
         run: |
-          docker load --input ${{ steps.imagetag.outputs.hash }}/github_v1_16_1.tar
-          docker load --input ${{ steps.imagetag.outputs.hash }}/github_v1_17_1.tar
-          docker load --input ${{ steps.imagetag.outputs.hash }}/github_latest_1.tar
+          docker load --input ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}/github_v1_16_1.tar
+          docker load --input ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}/github_v1_17_1.tar
+          docker load --input ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}/github_latest_1.tar
 
       - name: Pull base images if no-cache
         if: steps.cache.outputs.cache-hit != 'true'
@@ -60,9 +60,10 @@ jobs:
       - name: Save built images if no-cache
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          docker save --output ${{ steps.imagetag.outputs.hash }}/github_v1_16_1.tar github_v1_16:latest
-          docker save --output ${{ steps.imagetag.outputs.hash }}/github_v1_17_1.tar github_v1_17:latest
-          docker save --output ${{ steps.imagetag.outputs.hash }}/github_latest_1.tar github_latest:latest
+          mkdir -p ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}
+          docker save --output ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}/github_v1_16_1.tar github_v1_16:latest
+          docker save --output ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}/github_v1_17_1.tar github_v1_17:latest
+          docker save --output ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}/github_latest_1.tar github_latest:latest
 
       - name: Run tests on Go 1.16
         run: docker-compose --file ./.github/docker-compose.yml run v1_16

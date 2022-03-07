@@ -265,12 +265,15 @@ type DummyStruct struct {
 	ID        int
 }
 
+// GetIP is an implementation of provider.Provider interface.
 func (d DummyStruct) GetIP() (net.IP, error) {
 	return d.DummyFunc()
 }
 
+// Name is an implementation of provider.Provider interface.
 func (d DummyStruct) Name() string {
 	return "http://dummy.com/"
 }
 
-func (d DummyStruct) URL(url string) {}
+// SetURL is an implementation of provider.Provider interface.
+func (d DummyStruct) SetURL(url string) {}

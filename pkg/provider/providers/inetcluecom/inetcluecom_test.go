@@ -29,7 +29,7 @@ func TestGetIP_golden(t *testing.T) {
 	defer dummySrv.Close()
 
 	cli := inetcluecom.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 
 	// Test
 	ip, err := cli.GetIP()
@@ -51,7 +51,7 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 	defer dummySrv.Close()
 
 	cli := inetcluecom.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 
 	// Backup and defer restore inetclue.com.LogInfo.
 	oldLogInfo := inetcluecom.LogInfo
@@ -75,7 +75,7 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 
 func TestGetIP_error_no_URL(t *testing.T) {
 	cli := inetcluecom.New()
-	cli.URL("") // Set empty URL
+	cli.SetURL("") // Set empty URL
 
 	// Test
 	out := capturer.CaptureOutput(func() {
@@ -97,7 +97,7 @@ func TestGetIP_error_response(t *testing.T) {
 	defer dummySrv.Close()
 
 	cli := inetcluecom.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 	t.Log("Dummy server:", dummySrv.URL)
 
 	// Test
@@ -134,7 +134,7 @@ func TestGetIP_error_read_response(t *testing.T) {
 	}
 
 	cli := inetcluecom.New()
-	cli.URL(dummySrv.URL) // Override URL to dummy server
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
 
 	// Test
 	ip, err := cli.GetIP()

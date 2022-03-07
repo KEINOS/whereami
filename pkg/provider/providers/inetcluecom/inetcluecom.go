@@ -1,5 +1,5 @@
 /*
-Package inetcluecom provides an interface to the inetclue.com API.
+Package inetcluecom provides an interface to the inetclue.com web service.
 */
 package inetcluecom
 
@@ -116,8 +116,8 @@ func (c *Client) Name() string {
 	return c.EndpointURL
 }
 
-// URL overrides the default value of the API endpoint URL.
-func (c *Client) URL(url string) {
+// SetURL overrides the default value of the API endpoint URL.
+func (c *Client) SetURL(url string) {
 	c.EndpointURL = url
 }
 
