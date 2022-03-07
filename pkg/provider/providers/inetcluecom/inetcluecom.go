@@ -26,6 +26,21 @@ var IOReadAll = io.ReadAll
 var LogInfo = info.Log
 
 // ----------------------------------------------------------------------------
+//  Package Functions
+// ----------------------------------------------------------------------------
+
+// ScrapeIPv4 returns the first IPv4 address found from the given html.
+func ScrapeIPv4(html []byte) string {
+	exp := `(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`
+	rex := regexp.MustCompile(exp)
+
+	ip := rex.FindString(string(html)) // Find IP
+
+	// Trim leading zeroed IP "001.001.001.001" as "1.1.1.1"
+	return info.NormalizeIPv4(ip)
+}
+
+// ----------------------------------------------------------------------------
 //  Type: Client
 // ----------------------------------------------------------------------------
 
@@ -53,17 +68,6 @@ func New() *Client {
 	return &Client{
 		EndpointURL: urlDefault,
 	}
-}
-
-// ScrapeIPv4 returns the first IPv4 address found from the given html.
-func ScrapeIPv4(html []byte) string {
-	exp := `(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`
-	rex := regexp.MustCompile(exp)
-
-	ip := rex.FindString(string(html)) // Find IP
-
-	// Trim leading zeroed IP "001.001.001.001" as "1.1.1.1"
-	return info.NormalizeIPv4(ip)
 }
 
 // ----------------------------------------------------------------------------
