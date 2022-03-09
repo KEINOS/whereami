@@ -13,19 +13,38 @@ $ whereami
 $ whereami -help
 Usage of whereami:
   -verbose
-        prints detailed information if any
+        prints detailed information if any. such as IPv6 and etc.
 ```
 
 ## Install
 
-- Via [Homebrew](https://brew.sh/) for macOS, Linux and Windows WSL2. (Intel, AMD64, ARM64, M1)
+- Manual download and install:
+  - [Latest Releases Page](https://github.com/KEINOS/whereami/releases/latest)
+    - **macOS** (Darwin=x86_64/M1), **Windows** (x86_64/ARM64), **Linux** (x86_64/ARM64/ARM v5, 6, 7)
+    - Download the archive of your OS and architecture then extract it. Place the extracted binary in your PATH with executable permission.
+
+- Install via [Homebrew](https://brew.sh/):
+  - macOS, Linux and Windows WSL2. (x86_64/ARM64, M1)
 
     ```bash
     brew install KEINOS/apps/whereami
     ```
 
-- For manual download or other architectures like ARM v5, 6, 7 see:
-  - [Latest Releases Page](https://github.com/KEINOS/whereami/releases/latest)
+- Install via `go install`:
+  - Go v1.16 or above.
+
+    ```bash
+    go install github.com/KEINOS/whereami/cmd/whereami@latest
+    ```
+
+- Run via Docker:
+  - x86_64 (Intel/AMD) and ARM64/M1 architectures.
+
+    ```bash
+    docker pull keinos/whereami
+    docker run --rm keinos/whereami
+    ```
+
 - Note:
   - To avoid a large number of API requests to the service providers, **this application sleeps for one second** after printing the obtained global/public IP address.
 
@@ -40,12 +59,14 @@ Usage of whereami:
 ## Contribute
 
 [![go1.16+](https://img.shields.io/badge/Go-1.16+-blue?logo=go)](https://github.com/KEINOS/whereami/actions/workflows/go-versions.yml "Supported versions")
-[![Go Reference](https://pkg.go.dev/badge/github.com/KEINOS/whereami.svg)](https://pkg.go.dev/github.com/KEINOS/whereami/)
+[![Go Reference](https://pkg.go.dev/badge/github.com/KEINOS/whereami.svg)](https://pkg.go.dev/github.com/KEINOS/whereami/ "View document")
+[![Opened Issues](https://img.shields.io/github/issues/KEINOS/whereami?color=lightblue&logo=github)](https://github.com/KEINOS/whereami/issues "opened issues")
+[![PR](https://img.shields.io/github/issues-pr/KEINOS/whereami?color=lightblue&logo=github)](https://github.com/KEINOS/whereami/pulls "Pull Requests")
 
 - [GolangCI Lint](https://golangci-lint.run/) rules: [.golangci-lint.yml](https://github.com/KEINOS/whereami/blob/main/.golangci.yml)
 - To run tests in a container:
   - `docker-compose --file ./.github/docker-compose.yml run v1_17`
-  - This will run: `go test -cover ./...`, `golangci-lint run` and `golint ./...`
+  - This will run: `go test -cover -race ./...`, `golangci-lint run` and `golint ./...`
 - Branch to PR: `main`
   - It is recommended that [DraftPR](https://github.blog/2019-02-14-introducing-draft-pull-requests/) be done first to avoid duplication of work.
 
@@ -65,4 +86,4 @@ We would like to thank the following service providers that this command uses to
 - [https://toolpage.org/](https://en.toolpage.org/tool/ip-address)
 - [https://whatismyip.com/](https://www.whatismyip.com/)
 
-> **This command requests these providers in random order and returns the first IP address with the same response**. (As soon as 3 of the same IP address are returned, the command stops and returns that IP address.)
+> **This command requests these providers in random order and returns the first IP address with the same response**. (As soon as 3 of the same IP address are returned, the command stops and prints that IP address.)

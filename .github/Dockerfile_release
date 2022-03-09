@@ -1,0 +1,16 @@
+# =============================================================================
+#  Docker Container for DockerHub Release
+# =============================================================================
+#  This Dockerfile is used in goreleaser. This will include the built binary and
+#  creates multiarch Docker image.
+FROM golang:alpine AS build
+
+RUN apk add --no-cache \
+    ca-certificates
+
+FROM scratch
+
+COPY ./whereami /usr/bin/whereami
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
+ENTRYPOINT ["/usr/bin/whereami"]

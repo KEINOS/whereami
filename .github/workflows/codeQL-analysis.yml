@@ -1,9 +1,5 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
-#
+# Code vulnerability scanning of Go with CodeQL.
+# It will detect the known vulnerability of the code.
 name: "CodeQL"
 
 on:
