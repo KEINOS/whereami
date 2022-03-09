@@ -7,19 +7,19 @@
 # version, during it's process the "go.mod" file will be gone temporarily. Thus,
 # it will cause failure in the other container becaue of missing "go.mod" file.
 #
-# Recommended usage:
-#   docker-compose --file ./.github/docker-compose.yml run tidy && \
-#   docker-compose --file ./.github/docker-compose.yml run v1_17
-#
-# NOT recommended to run all tests at once whith "up":
-#   docker-compose --file ./.github/docker-compose.yml up
+# - Recommended usage:
+#     $ docker-compose --file ./.github/docker-compose.yml run v1_17
+# - To update go.mod:
+#     $ docker-compose --file ./.github/docker-compose.yml run tidy
+# - NOT recommended to run all tests at once whith "up":
+#     $ docker-compose --file ./.github/docker-compose.yml up
 version: "3.9"
 services:
   # Service tidy updates the go.mod to the latest
   tidy:
     build:
       context: ..
-      dockerfile: ./.github/Dockerfile
+      dockerfile: ./.github/Dockerfile_unit_test
       args:
         VARIANT: 1.16-alpine
     volumes:
@@ -29,7 +29,7 @@ services:
   v1_14:
     build:
       context: ..
-      dockerfile: ./.github/Dockerfile
+      dockerfile: ./.github/Dockerfile_unit_test
       args:
         VARIANT: 1.14-alpine
     volumes:
@@ -38,7 +38,7 @@ services:
   v1_15:
     build:
       context: ..
-      dockerfile: ./.github/Dockerfile
+      dockerfile: ./.github/Dockerfile_unit_test
       args:
         VARIANT: 1.15-alpine
     volumes:
@@ -47,7 +47,7 @@ services:
   v1_16:
     build:
       context: ..
-      dockerfile: ./.github/Dockerfile
+      dockerfile: ./.github/Dockerfile_unit_test
       args:
         VARIANT: 1.16-alpine
     volumes:
@@ -56,7 +56,7 @@ services:
   v1_17:
     build:
       context: ..
-      dockerfile: ./.github/Dockerfile
+      dockerfile: ./.github/Dockerfile_unit_test
       args:
         VARIANT: 1.17-alpine
     volumes:
@@ -65,7 +65,7 @@ services:
   latest:
     build:
       context: ..
-      dockerfile: ./.github/Dockerfile
+      dockerfile: ./.github/Dockerfile_unit_test
       args:
         VARIANT: alpine
     volumes:

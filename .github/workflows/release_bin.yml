@@ -3,7 +3,7 @@
 # =============================================================================
 # This workflow will build the binaries and push the archives to the assets in
 # the releases page if a release was created. Then pushes the tap config file
-# for Homebrew tap. See: ../../.goreleaser.yml
+# to update Homebrew tap. See: ../../.goreleaser.yml
 name: Release
 
 on:
@@ -25,6 +25,11 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '1.17.x'
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:

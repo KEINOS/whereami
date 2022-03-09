@@ -49,7 +49,7 @@ func init() {
 	// Set global/public IP address detection service providers
 	listProvider = provider.GetAll()
 	// Define flag options
-	flag.BoolVar(&isVerbose, "verbose", false, "prints detailed information if any")
+	flag.BoolVar(&isVerbose, "verbose", false, "prints detailed information if any. such as IPv6 and etc.")
 }
 
 func main() {

@@ -1,3 +1,6 @@
+# Unit testing on vaious Go versions, such as Go 1.16 and later.
+#
+# This workflow caches images built with Docker and docker-compose to speed up its execution.
 name: go1.16+
 
 on:
@@ -23,6 +26,7 @@ jobs:
       - name: Create image tag from file hash
         uses: KEINOS/gh-action-hash-for-cache@main
         id: imagetag
+        # Udate the hash if Dockerfile is changed or the month has changed.
         with:
           path: |
             ./.github/Dockerfile
@@ -35,7 +39,7 @@ jobs:
           path: ${{ env.PATH_CACHE }}
           key: ${{ steps.imagetag.outputs.hash }}
 
-      - name: Load cached Docker images
+      - name: Load cached Docker images if any
         if: steps.cache.outputs.cache-hit == 'true'
         run: |
           docker load --input ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}/github_v1_16_1.tar
@@ -53,11 +57,9 @@ jobs:
       - name: Build Docker images if no-cache
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${{ steps.imagetag.outputs.hash }}
-          : # Build container images
           docker-compose --file ./.github/docker-compose.yml build
 
-      - name: Save built images if no-cache
+      - name: Save/export built images to cache dir if no-cache
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p ${{ env.PATH_CACHE }}/${{ steps.imagetag.outputs.hash }}
