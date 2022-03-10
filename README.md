@@ -41,6 +41,7 @@ Usage of whereami:
   - x86_64 (Intel/AMD) and ARM64/M1 architectures.
 
     ```bash
+    # The image is around 5.5MB in size
     docker pull keinos/whereami
     docker run --rm keinos/whereami
     ```

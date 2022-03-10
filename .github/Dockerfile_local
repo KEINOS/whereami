@@ -3,8 +3,13 @@
 # =============================================================================
 #  This Dockerfile will create a light weight container image that only contains
 #  the `whereami` binary.
+#
 #  Use this container if you don't have Go installed or if you don't want to
 #  install the command locally.
+#
+#  To build locally run the below from the root of the repo:
+#      docker build -f ./.github/Dockerfile_local -t keinos/whereami .
+#
 
 # -----------------------------------------------------------------------------
 #  Build Stage
@@ -12,8 +17,6 @@
 FROM golang:alpine AS build
 
 RUN apk add --no-cache \
-#    alpine-sdk \
-#    build-base \
     ca-certificates
 
 COPY . /workspace
@@ -21,8 +24,6 @@ COPY . /workspace
 WORKDIR /workspace
 
 ENV CGO_ENABLED 0
-
-RUN ls -lah
 
 RUN \
     go build \

@@ -48,6 +48,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Import GPG key to sign the artifacts (checksums.txt)
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v4
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ""
+
       # Build and release
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
@@ -56,3 +64,4 @@ jobs:
           args: release --config .goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}

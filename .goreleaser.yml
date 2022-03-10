@@ -25,6 +25,11 @@ snapshot:
 # Directory name to distribute
 dist: bin
 
+# Enable signing
+signs:
+  - artifacts: checksum
+    args: ["--batch", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
+
 # Settings to build the binaries.
 builds:
   -
@@ -55,8 +60,6 @@ builds:
         goarch: arm
       - goos: windows
         goarch: arm
-      - goos: windows
-        goarch: arm64
     # Build the app as static binary and embed version and commit info
     ldflags:
       - -s -w -extldflags '-static' -X 'main.version={{.Version}}' -X 'main.commit={{ .ShortCommit }}'
