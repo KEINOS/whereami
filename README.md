@@ -1,8 +1,8 @@
 # WhereAmI
 
-"`whereami`" is a simple **command line utility that displays your current global/public IP address**; works on macOS, Linux and Windows.
+`whereami` is a simple **command line utility that displays your current global/public IP address**; works on macOS, Linux and Windows.
 
-Useful for finding out the ephemeral (current external) IP address.
+Useful for finding out the ephemeral (current external) IPv4 address.
 
 ```shellsession
 $ whereami
@@ -16,12 +16,17 @@ Usage of whereami:
         prints detailed information if any. such as IPv6 and etc.
 ```
 
+- Note:
+  - This command only displays IPv4 addresses. However, **some service providers will return IPv6 addresses and more detailed information**. In these cases, the `--verbose` option can be used to view the details of the provider's response.
+  - To avoid a large number of API requests to the service providers, **this application sleeps for one second** after printing the obtained global/public IP address.
+
 ## Install
 
 - Manual download and install:
   - [Latest Releases Page](https://github.com/KEINOS/whereami/releases/latest)
-    - **macOS** (Darwin=x86_64/M1), **Windows** (x86_64/ARM64), **Linux** (x86_64/ARM64/ARM v5, 6, 7)
+    - **macOS** (x86_64/M1), **Windows** (x86_64/ARM64), **Linux** (x86_64/ARM64/ARM v5, 6, 7)
     - Download the archive of your OS and architecture then extract it. Place the extracted binary in your PATH with executable permission.
+    - Public Key of the signature: [https://github.com/KEINOS.gpg](https://github.com/KEINOS.gpg)
 
 - Install via [Homebrew](https://brew.sh/):
   - macOS, Linux and Windows WSL2. (x86_64/ARM64, M1)
@@ -38,16 +43,13 @@ Usage of whereami:
     ```
 
 - Run via Docker:
-  - x86_64 (Intel/AMD) and ARM64/M1 architectures.
+  - Multiarch build for x86_64 (Intel/AMD) and ARM64/M1 architectures.
 
     ```bash
     # The image is around 5.5MB in size
-    docker pull keinos/whereami
+    docker pull keinos/whereami:latest
     docker run --rm keinos/whereami
     ```
-
-- Note:
-  - To avoid a large number of API requests to the service providers, **this application sleeps for one second** after printing the obtained global/public IP address.
 
 ## Statuses
 
@@ -87,4 +89,5 @@ We would like to thank the following service providers that this command uses to
 - [https://toolpage.org/](https://en.toolpage.org/tool/ip-address)
 - [https://whatismyip.com/](https://www.whatismyip.com/)
 
-> **This command requests these providers in random order and returns the first IP address with the same response**. (As soon as 3 of the same IP address are returned, the command stops and prints that IP address.)
+> **This command requests these providers in random order and returns the first IP address with the same response**. As soon as 3 of the same IP address are returned, the command stops and prints that IP address.
+> If you notice that a provider is not working or not responding properly, please [report an issue](https://github.com/KEINOS/whereami/issues).
