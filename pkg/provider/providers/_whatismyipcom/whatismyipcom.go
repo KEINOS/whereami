@@ -1,5 +1,8 @@
 /*
 Package whatismyipcom provides an interface to the www.whatismyip.com web service.
+
+Currently it is disabled in the command due to the following issue:
+  - https://github.com/KEINOS/whereami/issues/2
 */
 package whatismyipcom
 
