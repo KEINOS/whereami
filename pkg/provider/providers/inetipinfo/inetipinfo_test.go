@@ -16,7 +16,7 @@ import (
 
 func TestGetIP_golden(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
+		if _, err := w.Write([]byte(`{"ipAddress": "123.123.123.123"}`)); err != nil {
 			t.Fatal(err)
 		}
 	}))
@@ -38,7 +38,7 @@ func TestGetIP_golden(t *testing.T) {
 
 func TestGetIP_error_fail_logging(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
+		if _, err := w.Write([]byte(`{"ipAddress": "123.123.123.123"}`)); err != nil {
 			t.Fatal(err)
 		}
 	}))
