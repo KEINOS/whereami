@@ -69,7 +69,7 @@ func New() *Client {
 func (c *Client) GetIP() (net.IP, error) {
 	// HTTP request
 	response, err := netutil.HTTPGet(c.EndpointURL)
-	if err != nil {
+	if err != nil || response == nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
 

@@ -81,7 +81,7 @@ func (c *Client) GetIP() (net.IP, error) {
 
 	// Read response body
 	resBody, err := IOReadAll(response.Body)
-	if err != nil {
+	if err != nil || response == nil {
 		return nil, errors.Wrap(err, "fail to read response body")
 	}
 

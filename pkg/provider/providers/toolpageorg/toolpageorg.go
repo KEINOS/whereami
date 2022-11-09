@@ -69,12 +69,7 @@ func New() *Client {
 //  Functions
 // ----------------------------------------------------------------------------
 
-// GetResponse returns the Response object parsed from the en.toolpage.org's content body.
-func GetResponse(urlProvider string) (*Response, error) {
-	result := new(Response)
-
-	result.Provider = urlProvider
-
+func getResponse(urlProvider string) (*http.Response, error) {
 	// Validate URL to avoid gosec G107 vulnerability: Potential HTTP request made with variable url.
 	parsedURL, err := url.Parse(urlProvider)
 	if err != nil {
@@ -83,9 +78,21 @@ func GetResponse(urlProvider string) (*Response, error) {
 
 	// HTTP request
 	response, err := netutil.HTTPGet(parsedURL.String())
-	if err != nil {
+
+	return response, errors.Wrap(err, "failed to GET HTTP request")
+}
+
+// GetResponse returns the Response object parsed from the en.toolpage.org's content body.
+func GetResponse(urlProvider string) (*Response, error) {
+	result := new(Response)
+
+	result.Provider = urlProvider
+
+	response, err := getResponse(urlProvider)
+	if err != nil || response == nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
+
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {

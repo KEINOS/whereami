@@ -76,9 +76,8 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 	assert.Contains(t, err.Error(), "forced fail to log")
 }
 
+//nolint:paralleltest // do not parallelize due to race condition
 func TestGetIP_error_no_URL(t *testing.T) {
-	t.Parallel()
-
 	cli := inetcluecom.New()
 	cli.SetURL("") // Set empty URL
 
@@ -94,9 +93,8 @@ func TestGetIP_error_no_URL(t *testing.T) {
 	assert.Empty(t, out)
 }
 
+//nolint:paralleltest // do not parallelize due to race condition
 func TestGetIP_error_response(t *testing.T) {
-	t.Parallel()
-
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		fmt.Fprintf(w, "invalid request")

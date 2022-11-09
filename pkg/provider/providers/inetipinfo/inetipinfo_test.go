@@ -37,9 +37,8 @@ func TestGetIP_golden(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
+//nolint:paralleltest // do not parallelize due to race condition
 func TestGetIP_error_bad_json(t *testing.T) {
-	t.Parallel()
-
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte("[ipAddress]\n123.123.123.123\n")); err != nil {
 			t.Fatal(err)
@@ -108,9 +107,8 @@ func TestGetIP_error_no_URL(t *testing.T) {
 	assert.Empty(t, out)
 }
 
+//nolint:paralleltest // do not parallelize due to race condition
 func TestGetIP_error_response(t *testing.T) {
-	t.Parallel()
-
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		fmt.Fprintf(w, "invalid request")

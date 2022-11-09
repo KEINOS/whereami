@@ -45,7 +45,9 @@ func TestHTTPGet_failed_to_create_request(t *testing.T) {
 	resp, err := HTTPGet("http://localhost/")
 	require.Error(t, err, "empty URL should fail")
 
-	defer resp.Body.Close()
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 
 	require.Contains(t, err.Error(), "failed to create HTTP request", "it should contain the error reason")
 	require.Nil(t, resp, "returned response should be nil on error")
@@ -57,7 +59,9 @@ func TestHTTPGet_failed_to_do_request(t *testing.T) {
 	resp, err := HTTPGet("")
 	require.Error(t, err, "empty URL should fail")
 
-	defer resp.Body.Close()
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 
 	require.Contains(t, err.Error(), "failed to do HTTP request", "it should contain the error reason")
 	require.Nil(t, resp, "returned response should be nil on error")

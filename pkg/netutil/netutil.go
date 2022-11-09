@@ -14,6 +14,7 @@ import (
 // httpNewRequestWithContext is a copy of http.NewRequestWithContext to ease testing.
 var httpNewRequestWithContext = http.NewRequestWithContext
 
+// HTTPGet is a wrappper of http.Get with context.
 func HTTPGet(url string) (*http.Response, error) {
 	body := strings.NewReader("")
 
@@ -23,6 +24,7 @@ func HTTPGet(url string) (*http.Response, error) {
 	}
 
 	resp, err := http.DefaultClient.Do(request)
+	defer request.Body.Close()
 
 	return resp, errors.Wrap(err, "failed to do HTTP request")
 }
