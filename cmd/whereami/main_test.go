@@ -19,6 +19,7 @@ import (
 //  main()
 // ----------------------------------------------------------------------------
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func Test_main_golden(t *testing.T) {
 	restoreFn := backupAndRestore()
 	defer restoreFn()
@@ -42,6 +43,7 @@ func Test_main_golden(t *testing.T) {
 	assert.Equal(t, out, dummyIP)
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func Test_main_golden_verbose(t *testing.T) {
 	restoreFn := backupAndRestore()
 	defer restoreFn()
@@ -71,6 +73,7 @@ func Test_main_golden_verbose(t *testing.T) {
 	require.Contains(t, out, "Provider http://dummy.com/ returned the global/public IP as: 127.0.0.1")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func Test_main_no_provider_set(t *testing.T) {
 	restoreFn := backupAndRestore()
 	defer restoreFn()
@@ -102,6 +105,7 @@ func Test_main_no_provider_set(t *testing.T) {
 //  getRandProviders()
 // ----------------------------------------------------------------------------
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func Test_getRandProviders(t *testing.T) {
 	restoreFn := backupAndRestore()
 	defer restoreFn()
@@ -120,12 +124,16 @@ func Test_getRandProviders(t *testing.T) {
 		&DummyStruct{ID: 4, DummyFunc: dFn},
 	}
 
-	l := getRandProviders()
+	randProviders := getRandProviders()
 	resultOK := false
 
-	for i, obj := range l {
-		id := obj.(*DummyStruct).ID
-		if i != id {
+	for index, obj := range randProviders {
+		tmpObj, ok := obj.(*DummyStruct)
+
+		require.True(t, ok, "it should be able to convert to *DummyStruct")
+
+		id := tmpObj.ID
+		if index != id {
 			resultOK = true
 		}
 	}
@@ -137,14 +145,12 @@ func Test_getRandProviders(t *testing.T) {
 //  InfoLog()
 // ----------------------------------------------------------------------------
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func TestInfoLog(t *testing.T) {
-	// Backup and defer restore
-	oldInfoLog := infoLog
-	defer func() {
-		infoLog = oldInfoLog
-	}()
+	restoreFn := backupAndRestore()
+	defer restoreFn()
 
-	infoLog = func(logs ...string) (n int, err error) {
+	infoLog = func(logs ...string) (int, error) {
 		return 0, errors.New("forced error")
 	}
 
@@ -157,6 +163,7 @@ func TestInfoLog(t *testing.T) {
 //  Run()
 // ----------------------------------------------------------------------------
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func TestRun_error_from_GetIP_method(t *testing.T) {
 	restoreFn := backupAndRestore()
 	defer restoreFn()
@@ -181,6 +188,7 @@ func TestRun_error_from_GetIP_method(t *testing.T) {
 	assert.Contains(t, errLog, "forced error in GetIP method")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func TestRun_error_if_Get_returns_nil(t *testing.T) {
 	restoreFn := backupAndRestore()
 	defer restoreFn()
@@ -203,6 +211,7 @@ func TestRun_error_if_Get_returns_nil(t *testing.T) {
 	assert.Contains(t, logs, "returned an empty IP address")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global variables
 func TestRun_error_if_providers_returns_different_IPs(t *testing.T) {
 	restoreFn := backupAndRestore()
 	defer restoreFn()
@@ -233,7 +242,14 @@ func TestRun_error_if_providers_returns_different_IPs(t *testing.T) {
 //  Helper Functions
 // ============================================================================
 
+// Backup and restore global variables.
+//
+// Do not parallelize tests using this function. Due to temporary mocking global
+// variables.
+//
+//nolint:nonamedreturns // Allow named returns for readablity
 func backupAndRestore() (deferFunc func()) {
+	oldInfoLog := infoLog
 	oldOsArgs := os.Args
 	oldMaxNumUseDefault := maxNumUseDefault
 	oldListProvider := listProvider
@@ -241,12 +257,13 @@ func backupAndRestore() (deferFunc func()) {
 	oldLog := info.Get()
 
 	return func() {
+		infoLog = oldInfoLog
 		os.Args = oldOsArgs
 		listProvider = oldListProvider
 		maxNumUseDefault = oldMaxNumUseDefault
 		util.OsExit = oldOsExt
 
-		// Restore the old log
+		// Clear the current log and restore the old log
 		info.Clear()
 
 		if _, err := info.Log(oldLog); err != nil {
