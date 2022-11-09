@@ -14,9 +14,8 @@ import (
 	"github.com/zenizh/go-capturer"
 )
 
+//nolint:paralleltest // do not parallelize due to the race condition
 func TestGetIP_golden(t *testing.T) {
-	t.Parallel()
-
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ipAddress": "123.123.123.123"}`)); err != nil {
 			t.Fatal(err)
