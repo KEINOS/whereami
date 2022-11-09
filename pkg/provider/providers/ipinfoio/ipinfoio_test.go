@@ -14,9 +14,8 @@ import (
 	"github.com/zenizh/go-capturer"
 )
 
+//nolint:paralleltest // do not parallelize due to the race condition
 func TestGetIP_golden(t *testing.T) {
-	t.Parallel()
-
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
 			t.Fatal(err)
@@ -70,9 +69,8 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 	assert.Contains(t, err.Error(), "forced fail to log")
 }
 
+//nolint:paralleltest // do not parallelize due to the race condition
 func TestGet_error_no_URL(t *testing.T) {
-	t.Parallel()
-
 	cli := ipinfoio.New()
 	cli.SetURL("") // Set empty URL
 
@@ -88,9 +86,8 @@ func TestGet_error_no_URL(t *testing.T) {
 	assert.Empty(t, out, "it should not print anything on error")
 }
 
+//nolint:paralleltest // do not parallelize due to the race condition
 func TestGet_error_response(t *testing.T) {
-	t.Parallel()
-
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		fmt.Fprintf(w, "invalid request")
