@@ -13,26 +13,29 @@ func ExampleGetAll() {
 	listProviders := provider.GetAll()
 
 	// Use the 1st provider
-	p := listProviders[0]
+	providerA := listProviders[0]
 
-	// To avoid unnecessary API requests during testing the example, the URL is
+	// To avoid unnecessary API requests during running the example, the URL is
 	// temporarily set to a dummy server. This server returns "123.123.123.123".
 	dummyURL, closer := getDummyServerURL()
 	defer closer()
 
-	p.SetURL(dummyURL) // Override the default API endpoint URL.
+	providerA.SetURL(dummyURL) // Override the default API endpoint URL.
 
 	// Get the current global/public IP address
-	ip, err := p.GetIP()
+	ipAddress, err := providerA.GetIP()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+
+		return
 	}
 
-	fmt.Println(ip.String())
+	fmt.Println(ipAddress.String())
 
 	// Output: 123.123.123.123
 }
 
+//nolint:nonamedreturns // Allow named returns for readability
 func getDummyServerURL() (dummyURL string, deferFn func()) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {

@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Skip duplicate Actions
+        id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2

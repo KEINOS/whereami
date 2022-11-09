@@ -12,6 +12,7 @@ import (
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
+	"github.com/KEINOS/whereami/pkg/netutil"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/pkg/errors"
 )
@@ -49,8 +50,8 @@ type Response struct {
 	Provider   string `json:"provider"`
 	IP         string `json:"ip"`
 	Hostname   string `json:"hostname,omitempty"`
-	IPVersion  string `json:"ip_version,omitempty"`
-	RemotePort string `json:"remote_port,omitempty"`
+	IPVersion  string `json:"ipVersion,omitempty"`
+	RemotePort string `json:"remotePort,omitempty"`
 }
 
 // ----------------------------------------------------------------------------
@@ -64,12 +65,11 @@ func New() *Client {
 	}
 }
 
-// GetResponse returns the Response object parsed from the en.toolpage.org's content body.
-func GetResponse(urlProvider string) (*Response, error) {
-	result := &Response{
-		Provider: urlProvider,
-	}
+// ----------------------------------------------------------------------------
+//  Functions
+// ----------------------------------------------------------------------------
 
+func getResponse(urlProvider string) (*http.Response, error) {
 	// Validate URL to avoid gosec G107 vulnerability: Potential HTTP request made with variable url.
 	parsedURL, err := url.Parse(urlProvider)
 	if err != nil {
@@ -77,10 +77,22 @@ func GetResponse(urlProvider string) (*Response, error) {
 	}
 
 	// HTTP request
-	response, err := http.Get(parsedURL.String())
-	if err != nil {
+	response, err := netutil.HTTPGet(parsedURL.String())
+
+	return response, errors.Wrap(err, "failed to GET HTTP request")
+}
+
+// GetResponse returns the Response object parsed from the en.toolpage.org's content body.
+func GetResponse(urlProvider string) (*Response, error) {
+	result := new(Response)
+
+	result.Provider = urlProvider
+
+	response, err := getResponse(urlProvider)
+	if err != nil || response == nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
+
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
@@ -104,16 +116,16 @@ func GetResponse(urlProvider string) (*Response, error) {
 		return nil, errors.Wrap(err, "failed to construct goquery document")
 	}
 
-	doc.Find(".outputTableKey").Each(func(_ int, s *goquery.Selection) {
-		switch strings.TrimSpace(s.Text()) {
+	doc.Find(".outputTableKey").Each(func(_ int, querySelection *goquery.Selection) {
+		switch strings.TrimSpace(querySelection.Text()) {
 		case "IP Address:":
-			result.IP = s.Next().Text()
+			result.IP = querySelection.Next().Text()
 		case "Host Name:":
-			result.Hostname = s.Next().Text()
+			result.Hostname = querySelection.Next().Text()
 		case "IP Version:":
-			result.IPVersion = s.Next().Text()
+			result.IPVersion = querySelection.Next().Text()
 		case "Remote Port:":
-			result.RemotePort = s.Next().Text()
+			result.RemotePort = querySelection.Next().Text()
 		}
 	})
 

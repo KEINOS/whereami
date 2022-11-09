@@ -7,11 +7,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/pkg/errors"
-
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
 	"github.com/KEINOS/whereami/pkg/provider"
+	"github.com/pkg/errors"
 )
 
 const sleepTime = 1
@@ -45,6 +44,7 @@ var isVerbose bool
 //  Main
 // ----------------------------------------------------------------------------
 
+//nolint:gochecknoinits // Allow init() only for the main function
 func init() {
 	// Set global/public IP address detection service providers
 	listProvider = provider.GetAll()
@@ -74,19 +74,19 @@ func getRandProviders() []provider.Provider {
 
 // Calls GetIP method from the given provider and returns the detected IP address.
 func request(prov provider.Provider) (net.IP, error) {
-	ip, err := prov.GetIP()
+	ipAddress, err := prov.GetIP()
 
 	switch {
 	case err != nil:
 		errMsg := fmt.Sprintf("provider %v returned an error: %v", prov, err.Error())
 
 		return nil, errors.New(errMsg)
-	case ip == nil:
+	case ipAddress == nil:
 		errMsg := fmt.Sprintf("provider %v returned an empty IP address", prov.Name())
 
 		return nil, errors.New(errMsg)
 	default:
-		return ip, nil
+		return ipAddress, nil
 	}
 }
 
@@ -104,14 +104,14 @@ func getIPPublic(maxNumUse int) (string, error) {
 	foundIP := make(map[string]int)
 
 	for _, prov := range providers {
-		ip, err := request(prov)
+		ipAddress, err := request(prov)
 		if err != nil {
 			InfoLog(fmt.Sprintf("%v: %v", prov.Name(), err.Error()))
 
 			continue
 		}
 
-		key := ip.String()
+		key := ipAddress.String()
 
 		InfoLog(fmt.Sprintf(
 			"Provider %v returned the global/public IP as: %v",
@@ -131,15 +131,17 @@ func getIPPublic(maxNumUse int) (string, error) {
 
 // Run is the actual function of the app.
 func Run() error {
-	ip, err := getIPPublic(maxNumUseDefault)
+	ipAddress, err := getIPPublic(maxNumUseDefault)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%v", ip)
+	//nolint:forbidigo // Allow fmt.Println due to the main function
+	fmt.Printf("%v", ipAddress)
 
 	// Print verbose information
 	if isVerbose {
+		//nolint:forbidigo // Allow fmt.Println due to the main function
 		fmt.Printf("\n%v", info.Get())
 	}
 

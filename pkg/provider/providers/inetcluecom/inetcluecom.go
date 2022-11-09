@@ -11,6 +11,7 @@ import (
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
+	"github.com/KEINOS/whereami/pkg/netutil"
 	"github.com/pkg/errors"
 )
 
@@ -25,9 +26,9 @@ var IOReadAll = io.ReadAll
 // LogInfo is a copy of info.Log function to ease mock it's behavior during test.
 var LogInfo = info.Log
 
-// ----------------------------------------------------------------------------
-//  Package Functions
-// ----------------------------------------------------------------------------
+// ============================================================================
+//  Functions
+// ============================================================================
 
 // ScrapeIPv4 returns the first IPv4 address found from the given html.
 func ScrapeIPv4(html []byte) string {
@@ -40,23 +41,13 @@ func ScrapeIPv4(html []byte) string {
 	return info.NormalizeIPv4(ip)
 }
 
-// ----------------------------------------------------------------------------
+// ============================================================================
 //  Type: Client
-// ----------------------------------------------------------------------------
+// ============================================================================
 
 // Client holds information to request inetclue.com's URL.
 type Client struct {
 	EndpointURL string
-}
-
-// ----------------------------------------------------------------------------
-//  Type: Response
-// ----------------------------------------------------------------------------
-
-// Response is the structure of JSON from the API response of inetclue.com.
-type Response struct {
-	Provider string `json:"provider"`
-	IP       string `json:"origin"`
 }
 
 // ----------------------------------------------------------------------------
@@ -77,8 +68,8 @@ func New() *Client {
 // GetIP returns the current IP address detected by inetclue.com.
 func (c *Client) GetIP() (net.IP, error) {
 	// HTTP request
-	response, err := http.Get(c.EndpointURL)
-	if err != nil {
+	response, err := netutil.HTTPGet(c.EndpointURL)
+	if err != nil || response == nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
 
@@ -123,6 +114,16 @@ func (c *Client) Name() string {
 // SetURL overrides the default value of the API endpoint URL.
 func (c *Client) SetURL(url string) {
 	c.EndpointURL = url
+}
+
+// ============================================================================
+//  Type: Response
+// ============================================================================
+
+// Response is the structure of JSON from the API response of inetclue.com.
+type Response struct {
+	Provider string `json:"provider"`
+	IP       string `json:"origin"`
 }
 
 // ----------------------------------------------------------------------------

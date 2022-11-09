@@ -11,6 +11,7 @@ import (
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
+	"github.com/KEINOS/whereami/pkg/netutil"
 	"github.com/pkg/errors"
 )
 
@@ -50,8 +51,8 @@ func New() *Client {
 // GetIP returns the current IP address detected by inet-ip.info.
 func (c *Client) GetIP() (net.IP, error) {
 	// HTTP request
-	response, err := http.Get(c.EndpointURL)
-	if err != nil {
+	response, err := netutil.HTTPGet(c.EndpointURL)
+	if err != nil || response == nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
 
@@ -105,6 +106,8 @@ func (c *Client) SetURL(url string) {
 // ============================================================================
 
 // Response is the structure of JSON from the API response of inet-ip.info.
+//
+//nolint:tagliatelle // Allow UpperCamelCase for JSON keys due to the API response.
 type Response struct {
 	Provider  string `json:"provider"`
 	IPAddress string `json:"ipAddress"`

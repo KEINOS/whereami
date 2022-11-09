@@ -13,6 +13,7 @@ import (
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
+	"github.com/KEINOS/whereami/pkg/netutil"
 	"github.com/pkg/errors"
 )
 
@@ -71,7 +72,7 @@ func New() *Client {
 // GetIP returns the current IP address detected by ipify.org.
 func (c *Client) GetIP() (net.IP, error) {
 	// HTTP request
-	response, err := http.Get(c.EndpointURL)
+	response, err := netutil.HTTPGet(c.EndpointURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
@@ -80,7 +81,7 @@ func (c *Client) GetIP() (net.IP, error) {
 
 	// Read response body
 	resBody, err := IOReadAll(response.Body)
-	if err != nil {
+	if err != nil || response == nil {
 		return nil, errors.Wrap(err, "fail to read response body")
 	}
 

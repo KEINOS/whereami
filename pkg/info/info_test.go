@@ -21,12 +21,16 @@ func ExampleLog() {
 
 	// Log
 	if _, err := Log("This", "is", "the", "log1"); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+
+		return
 	}
 
 	// Logging
 	if _, err := Log("This", "is", "the", "log2"); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+
+		return
 	}
 
 	// Get the current log.
@@ -53,6 +57,7 @@ func ExampleLog() {
 	// Is log after 'Clear()' call empty: yes
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGet_whitespaces(t *testing.T) {
 	// Backup and defer restore.
 	oldLogBuff := logBuff
@@ -72,6 +77,8 @@ func TestGet_whitespaces(t *testing.T) {
 }
 
 func TestNormalizeIPv4(t *testing.T) {
+	t.Parallel()
+
 	for _, test := range []struct {
 		input  string
 		expect string
