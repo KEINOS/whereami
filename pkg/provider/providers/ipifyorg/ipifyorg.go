@@ -6,15 +6,14 @@ Package ipifyorg implements an interface to the ipify.org API.
 package ipifyorg
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"net"
 	"net/http"
-	"strings"
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
+	"github.com/KEINOS/whereami/pkg/netutil"
 	"github.com/pkg/errors"
 )
 
@@ -67,30 +66,13 @@ func New() *Client {
 }
 
 // ----------------------------------------------------------------------------
-//  Functions
-// ----------------------------------------------------------------------------
-
-func httpGet(url string) (*http.Response, error) {
-	body := strings.NewReader("")
-
-	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, body)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create HTTP request")
-	}
-
-	resp, err := http.DefaultClient.Do(request)
-
-	return resp, errors.Wrap(err, "failed to do HTTP request")
-}
-
-// ----------------------------------------------------------------------------
 //  Methods for Client
 // ----------------------------------------------------------------------------
 
 // GetIP returns the current IP address detected by ipify.org.
 func (c *Client) GetIP() (net.IP, error) {
 	// HTTP request
-	response, err := httpGet(c.EndpointURL)
+	response, err := netutil.HTTPGet(c.EndpointURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}

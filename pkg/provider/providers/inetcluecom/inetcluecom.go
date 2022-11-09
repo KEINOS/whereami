@@ -4,15 +4,14 @@ Package inetcluecom provides an interface to the inetclue.com web service.
 package inetcluecom
 
 import (
-	"context"
 	"io"
 	"net"
 	"net/http"
 	"regexp"
-	"strings"
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
+	"github.com/KEINOS/whereami/pkg/netutil"
 	"github.com/pkg/errors"
 )
 
@@ -30,19 +29,6 @@ var LogInfo = info.Log
 // ============================================================================
 //  Functions
 // ============================================================================
-
-func httpGet(url string) (*http.Response, error) {
-	body := strings.NewReader("")
-
-	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, body)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create HTTP request")
-	}
-
-	resp, err := http.DefaultClient.Do(request)
-
-	return resp, errors.Wrap(err, "failed to do HTTP request")
-}
 
 // ScrapeIPv4 returns the first IPv4 address found from the given html.
 func ScrapeIPv4(html []byte) string {
@@ -82,7 +68,7 @@ func New() *Client {
 // GetIP returns the current IP address detected by inetclue.com.
 func (c *Client) GetIP() (net.IP, error) {
 	// HTTP request
-	response, err := httpGet(c.EndpointURL)
+	response, err := netutil.HTTPGet(c.EndpointURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}

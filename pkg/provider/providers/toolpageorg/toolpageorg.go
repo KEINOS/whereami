@@ -4,7 +4,6 @@ Package toolpageorg provides an interface to the en.toolpage.org web service.
 package toolpageorg
 
 import (
-	"context"
 	"io"
 	"net"
 	"net/http"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
+	"github.com/KEINOS/whereami/pkg/netutil"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/pkg/errors"
 )
@@ -69,19 +69,6 @@ func New() *Client {
 //  Functions
 // ----------------------------------------------------------------------------
 
-func httpGet(url string) (*http.Response, error) {
-	body := strings.NewReader("")
-
-	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, body)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create HTTP request")
-	}
-
-	resp, err := http.DefaultClient.Do(request)
-
-	return resp, errors.Wrap(err, "failed to do HTTP request")
-}
-
 // GetResponse returns the Response object parsed from the en.toolpage.org's content body.
 func GetResponse(urlProvider string) (*Response, error) {
 	result := new(Response)
@@ -95,7 +82,7 @@ func GetResponse(urlProvider string) (*Response, error) {
 	}
 
 	// HTTP request
-	response, err := httpGet(parsedURL.String())
+	response, err := netutil.HTTPGet(parsedURL.String())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
