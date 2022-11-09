@@ -1,6 +1,6 @@
 # This workflow runs the unit test (`go test ./...`) on vaious platforms,
 # such as: Linux, macOS and Windows.
-name: UnitTests
+name: PlatformTests
 
 on:
   workflow_dispatch:
