@@ -9,6 +9,8 @@ import (
 	"net"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 var logBuff bytes.Buffer
@@ -33,42 +35,47 @@ func Get() string {
 // Log writes the given logs to the log buffer.
 //
 // Note that if a "logs" is empty, or all blank, nothing is recorded.
-func Log(logs ...string) (n int, err error) {
+func Log(logs ...string) (int, error) {
 	s := strings.TrimSpace(strings.Join(logs, " "))
 	if s == "" {
 		return 0, nil // do nothing
 	}
 
-	return logBuff.Write([]byte(Prefix + s + "\n"))
+	lenData, err := logBuff.Write([]byte(Prefix + s + "\n"))
+
+	return lenData, errors.Wrap(err, "failed to write to log buffer")
 }
 
 // NormalizeIPv4 will trim the zero padded IP address. For example, "001.001.001.001"
 // will be "1.1.1.1".
 //
-// Note that it is not a validator. If the given "ip" is invalid it will return as is.
-func NormalizeIPv4(ip string) string {
+// **Note** that it is not a validator. If the given ipAddress is invalid it will return as is.
+func NormalizeIPv4(ipAddress string) string {
 	// golden input
-	if net.ParseIP(ip).String() == ip {
-		return ip
+	if net.ParseIP(ipAddress).String() == ipAddress {
+		return ipAddress
 	}
+
+	// Number of numerical labels such as 1.1.1.1 has 4 labels.
+	const numChunks = 4
 
 	// Split quad-dotted IP address
-	chunks := strings.Split(ip, ".")
-	if len(chunks) != 4 {
-		return ip
+	chunks := strings.Split(ipAddress, ".")
+	if len(chunks) != numChunks {
+		return ipAddress
 	}
 
-	ipv4 := make([]byte, 4)
+	ipv4 := make([]byte, numChunks)
 
-	for i, chunk := range chunks {
-		b, err := strconv.Atoi(chunk)
+	for index, chunk := range chunks {
+		chunkInt, err := strconv.Atoi(chunk)
 		if err != nil {
-			return ip
+			return ipAddress
 		}
 
 		// Check for lower and upper bounds
-		if b > 0 && b <= math.MaxInt8 {
-			ipv4[i] = byte(b)
+		if chunkInt > 0 && chunkInt <= math.MaxInt8 {
+			ipv4[index] = byte(chunkInt)
 		}
 	}
 

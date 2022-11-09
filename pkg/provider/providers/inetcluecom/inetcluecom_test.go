@@ -1,7 +1,6 @@
 package inetcluecom_test
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/KEINOS/whereami/pkg/provider/providers/inetcluecom"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zenizh/go-capturer"
@@ -21,6 +21,8 @@ var responseData = `
 `
 
 func TestGetIP_golden(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(responseData)); err != nil {
 			t.Fatal(err)
@@ -42,6 +44,7 @@ func TestGetIP_golden(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetIP_error_fail_logging(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"origin": "123.123.123.123"}`)); err != nil {
@@ -60,7 +63,7 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 	}()
 
 	// Modck LogInfo to force fail logging.
-	inetcluecom.LogInfo = func(logs ...string) (n int, err error) {
+	inetcluecom.LogInfo = func(logs ...string) (int, error) {
 		return 0, errors.New("forced fail to log")
 	}
 
@@ -74,6 +77,8 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 }
 
 func TestGetIP_error_no_URL(t *testing.T) {
+	t.Parallel()
+
 	cli := inetcluecom.New()
 	cli.SetURL("") // Set empty URL
 
@@ -90,6 +95,8 @@ func TestGetIP_error_no_URL(t *testing.T) {
 }
 
 func TestGetIP_error_response(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		fmt.Fprintf(w, "invalid request")
@@ -114,6 +121,7 @@ func TestGetIP_error_response(t *testing.T) {
 	assert.Empty(t, out)
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetIP_error_read_response(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"origin": "123.123.123.123"}`)); err != nil {
@@ -146,15 +154,18 @@ func TestGetIP_error_read_response(t *testing.T) {
 }
 
 func TestName(t *testing.T) {
+	t.Parallel()
+
 	cli := inetcluecom.New()
 
 	expect := cli.EndpointURL
 	actual := cli.Name()
-
 	assert.Equal(t, expect, actual, "currently the provider name should be the endpoint URL")
 }
 
 func TestScrapeIPv4(t *testing.T) {
+	t.Parallel()
+
 	for _, test := range []struct {
 		input  string
 		expect string

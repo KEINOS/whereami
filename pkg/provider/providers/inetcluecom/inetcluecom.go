@@ -4,10 +4,12 @@ Package inetcluecom provides an interface to the inetclue.com web service.
 package inetcluecom
 
 import (
+	"context"
 	"io"
 	"net"
 	"net/http"
 	"regexp"
+	"strings"
 
 	"github.com/KEINOS/go-utiles/util"
 	"github.com/KEINOS/whereami/pkg/info"
@@ -25,9 +27,22 @@ var IOReadAll = io.ReadAll
 // LogInfo is a copy of info.Log function to ease mock it's behavior during test.
 var LogInfo = info.Log
 
-// ----------------------------------------------------------------------------
-//  Package Functions
-// ----------------------------------------------------------------------------
+// ============================================================================
+//  Functions
+// ============================================================================
+
+func httpGet(url string) (*http.Response, error) {
+	body := strings.NewReader("")
+
+	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, body)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create HTTP request")
+	}
+
+	resp, err := http.DefaultClient.Do(request)
+
+	return resp, errors.Wrap(err, "failed to do HTTP request")
+}
 
 // ScrapeIPv4 returns the first IPv4 address found from the given html.
 func ScrapeIPv4(html []byte) string {
@@ -40,23 +55,13 @@ func ScrapeIPv4(html []byte) string {
 	return info.NormalizeIPv4(ip)
 }
 
-// ----------------------------------------------------------------------------
+// ============================================================================
 //  Type: Client
-// ----------------------------------------------------------------------------
+// ============================================================================
 
 // Client holds information to request inetclue.com's URL.
 type Client struct {
 	EndpointURL string
-}
-
-// ----------------------------------------------------------------------------
-//  Type: Response
-// ----------------------------------------------------------------------------
-
-// Response is the structure of JSON from the API response of inetclue.com.
-type Response struct {
-	Provider string `json:"provider"`
-	IP       string `json:"origin"`
 }
 
 // ----------------------------------------------------------------------------
@@ -77,7 +82,7 @@ func New() *Client {
 // GetIP returns the current IP address detected by inetclue.com.
 func (c *Client) GetIP() (net.IP, error) {
 	// HTTP request
-	response, err := http.Get(c.EndpointURL)
+	response, err := httpGet(c.EndpointURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
@@ -123,6 +128,16 @@ func (c *Client) Name() string {
 // SetURL overrides the default value of the API endpoint URL.
 func (c *Client) SetURL(url string) {
 	c.EndpointURL = url
+}
+
+// ============================================================================
+//  Type: Response
+// ============================================================================
+
+// Response is the structure of JSON from the API response of inetclue.com.
+type Response struct {
+	Provider string `json:"provider"`
+	IP       string `json:"origin"`
 }
 
 // ----------------------------------------------------------------------------

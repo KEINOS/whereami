@@ -1,7 +1,6 @@
 package inetipinfo_test
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,12 +8,15 @@ import (
 	"testing"
 
 	"github.com/KEINOS/whereami/pkg/provider/providers/inetipinfo"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zenizh/go-capturer"
 )
 
 func TestGetIP_golden(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ipAddress": "123.123.123.123"}`)); err != nil {
 			t.Fatal(err)
@@ -37,6 +39,8 @@ func TestGetIP_golden(t *testing.T) {
 }
 
 func TestGetIP_error_bad_json(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte("[ipAddress]\n123.123.123.123\n")); err != nil {
 			t.Fatal(err)
@@ -55,6 +59,7 @@ func TestGetIP_error_bad_json(t *testing.T) {
 	require.Nil(t, ip, "the returned IP should be nil on error")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetIP_error_fail_logging(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ipAddress": "123.123.123.123"}`)); err != nil {
@@ -73,7 +78,7 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 	}()
 
 	// Modck LogInfo to force fail logging.
-	inetipinfo.LogInfo = func(logs ...string) (n int, err error) {
+	inetipinfo.LogInfo = func(logs ...string) (int, error) {
 		return 0, errors.New("forced fail to log")
 	}
 
@@ -87,6 +92,8 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 }
 
 func TestGetIP_error_no_URL(t *testing.T) {
+	t.Parallel()
+
 	cli := inetipinfo.New()
 	cli.SetURL("") // Set empty URL
 
@@ -103,6 +110,8 @@ func TestGetIP_error_no_URL(t *testing.T) {
 }
 
 func TestGetIP_error_response(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		fmt.Fprintf(w, "invalid request")
@@ -127,6 +136,7 @@ func TestGetIP_error_response(t *testing.T) {
 	assert.Empty(t, out)
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetIP_error_read_response(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
@@ -159,6 +169,8 @@ func TestGetIP_error_read_response(t *testing.T) {
 }
 
 func TestName(t *testing.T) {
+	t.Parallel()
+
 	cli := inetipinfo.New()
 
 	expect := cli.EndpointURL

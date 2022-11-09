@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func Test_issue9(t *testing.T) {
 	// Get golden JSON of server response
 	data, err := os.ReadFile("testdata/response.json")

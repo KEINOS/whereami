@@ -1,7 +1,6 @@
 package ipinfoio_test
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,12 +8,15 @@ import (
 	"testing"
 
 	"github.com/KEINOS/whereami/pkg/provider/providers/ipinfoio"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zenizh/go-capturer"
 )
 
 func TestGetIP_golden(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
 			t.Fatal(err)
@@ -36,6 +38,7 @@ func TestGetIP_golden(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetIP_error_fail_logging(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
@@ -54,7 +57,7 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 	}()
 
 	// Modck LogInfo to force fail logging.
-	ipinfoio.LogInfo = func(logs ...string) (n int, err error) {
+	ipinfoio.LogInfo = func(logs ...string) (int, error) {
 		return 0, errors.New("forced fail to log")
 	}
 
@@ -68,6 +71,8 @@ func TestGetIP_error_fail_logging(t *testing.T) {
 }
 
 func TestGet_error_no_URL(t *testing.T) {
+	t.Parallel()
+
 	cli := ipinfoio.New()
 	cli.SetURL("") // Set empty URL
 
@@ -84,6 +89,8 @@ func TestGet_error_no_URL(t *testing.T) {
 }
 
 func TestGet_error_response(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) // 400 Bad Request
 		fmt.Fprintf(w, "invalid request")
@@ -108,6 +115,7 @@ func TestGet_error_response(t *testing.T) {
 	assert.Empty(t, out, "it should not print anything on error")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGet_error_read_response(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ip": "123.123.123.123"}`)); err != nil {
@@ -140,6 +148,8 @@ func TestGet_error_read_response(t *testing.T) {
 }
 
 func TestName(t *testing.T) {
+	t.Parallel()
+
 	cli := ipinfoio.New()
 
 	expect := cli.EndpointURL

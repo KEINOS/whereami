@@ -1,7 +1,6 @@
 package toolpageorg_test
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,6 +10,7 @@ import (
 	"github.com/KEINOS/whereami/pkg/info"
 	"github.com/KEINOS/whereami/pkg/provider/providers/toolpageorg"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zenizh/go-capturer"
@@ -52,6 +52,7 @@ func ExampleClient_Name() {
 //  Tests for Methods
 // ----------------------------------------------------------------------------
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetIP_golden(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Response with golden data
@@ -88,6 +89,8 @@ func TestGetIP_golden(t *testing.T) {
 }
 
 func TestGetIP_fail_get_response(t *testing.T) {
+	t.Parallel()
+
 	// Instantiate toolpageorg
 	cli := toolpageorg.New()
 	cli.SetURL("") // Override URL as empty
@@ -102,6 +105,7 @@ func TestGetIP_fail_get_response(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to GET HTTP request:")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetIP_fail_log(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Response with golden data
@@ -117,7 +121,7 @@ func TestGetIP_fail_log(t *testing.T) {
 		toolpageorg.LogInfo = oldLogInfo
 	}()
 
-	toolpageorg.LogInfo = func(logs ...string) (n int, err error) {
+	toolpageorg.LogInfo = func(logs ...string) (int, error) {
 		return 0, errors.New("forced error in LogInfo")
 	}
 
@@ -139,6 +143,8 @@ func TestGetIP_fail_log(t *testing.T) {
 // ----------------------------------------------------------------------------
 
 func TestGetResponse_fail_parse_url(t *testing.T) {
+	t.Parallel()
+
 	malformedURL := string(byte(0x7f))
 
 	res, err := toolpageorg.GetResponse(malformedURL)
@@ -151,6 +157,8 @@ func TestGetResponse_fail_parse_url(t *testing.T) {
 }
 
 func TestGetResponse_fail_get_response(t *testing.T) {
+	t.Parallel()
+
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Response with 400 Bad Request
 		w.WriteHeader(http.StatusBadRequest)
@@ -173,6 +181,7 @@ func TestGetResponse_fail_get_response(t *testing.T) {
 	assert.Empty(t, out, "output should be empty on error")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetResponse_fail_read_response_body(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Response with 400 Bad Request
@@ -205,6 +214,7 @@ func TestGetResponse_fail_read_response_body(t *testing.T) {
 	assert.Empty(t, out, "output should be empty on error")
 }
 
+//nolint:paralleltest // do not parallelize due to mocking global function variables
 func TestGetResponse_fail_create_goquery_document(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		// Response with golden data

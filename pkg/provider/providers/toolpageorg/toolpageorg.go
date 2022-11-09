@@ -4,6 +4,7 @@ Package toolpageorg provides an interface to the en.toolpage.org web service.
 package toolpageorg
 
 import (
+	"context"
 	"io"
 	"net"
 	"net/http"
@@ -49,8 +50,8 @@ type Response struct {
 	Provider   string `json:"provider"`
 	IP         string `json:"ip"`
 	Hostname   string `json:"hostname,omitempty"`
-	IPVersion  string `json:"ip_version,omitempty"`
-	RemotePort string `json:"remote_port,omitempty"`
+	IPVersion  string `json:"ipVersion,omitempty"`
+	RemotePort string `json:"remotePort,omitempty"`
 }
 
 // ----------------------------------------------------------------------------
@@ -64,11 +65,28 @@ func New() *Client {
 	}
 }
 
+// ----------------------------------------------------------------------------
+//  Functions
+// ----------------------------------------------------------------------------
+
+func httpGet(url string) (*http.Response, error) {
+	body := strings.NewReader("")
+
+	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url, body)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create HTTP request")
+	}
+
+	resp, err := http.DefaultClient.Do(request)
+
+	return resp, errors.Wrap(err, "failed to do HTTP request")
+}
+
 // GetResponse returns the Response object parsed from the en.toolpage.org's content body.
 func GetResponse(urlProvider string) (*Response, error) {
-	result := &Response{
-		Provider: urlProvider,
-	}
+	result := new(Response)
+
+	result.Provider = urlProvider
 
 	// Validate URL to avoid gosec G107 vulnerability: Potential HTTP request made with variable url.
 	parsedURL, err := url.Parse(urlProvider)
@@ -77,7 +95,7 @@ func GetResponse(urlProvider string) (*Response, error) {
 	}
 
 	// HTTP request
-	response, err := http.Get(parsedURL.String())
+	response, err := httpGet(parsedURL.String())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to GET HTTP request")
 	}
@@ -104,16 +122,16 @@ func GetResponse(urlProvider string) (*Response, error) {
 		return nil, errors.Wrap(err, "failed to construct goquery document")
 	}
 
-	doc.Find(".outputTableKey").Each(func(_ int, s *goquery.Selection) {
-		switch strings.TrimSpace(s.Text()) {
+	doc.Find(".outputTableKey").Each(func(_ int, querySelection *goquery.Selection) {
+		switch strings.TrimSpace(querySelection.Text()) {
 		case "IP Address:":
-			result.IP = s.Next().Text()
+			result.IP = querySelection.Next().Text()
 		case "Host Name:":
-			result.Hostname = s.Next().Text()
+			result.Hostname = querySelection.Next().Text()
 		case "IP Version:":
-			result.IPVersion = s.Next().Text()
+			result.IPVersion = querySelection.Next().Text()
 		case "Remote Port:":
-			result.RemotePort = s.Next().Text()
+			result.RemotePort = querySelection.Next().Text()
 		}
 	})
 
