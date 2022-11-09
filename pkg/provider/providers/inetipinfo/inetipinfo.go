@@ -108,68 +108,17 @@ func (c *Client) SetURL(url string) {
 type Response struct {
 	Provider  string `json:"provider"`
 	IPAddress string `json:"ipAddress"`
+	License   string `json:"license,omitempty"`
 	ASN       struct {
-		AutonomousSystemNumber       int    `json:"AutonomousSystemNumber,omitempty"`
 		AutonomousSystemOrganization string `json:"AutonomousSystemOrganization,omitempty"`
+		AutonomousSystemNumber       int    `json:"AutonomousSystemNumber,omitempty"`
 	} `json:"asn,omitempty"`
 	City struct {
-		City struct {
-			GeoNameID int `json:"GeoNameID,omitempty"`
-			Names     struct {
-				De   string `json:"de,omitempty"`
-				En   string `json:"en,omitempty"`
-				Es   string `json:"es,omitempty"`
-				Fr   string `json:"fr,omitempty"`
-				Ja   string `json:"ja,omitempty"`
-				PtBR string `json:"pt-BR,omitempty"`
-				Ru   string `json:"ru,omitempty"`
-				ZhCN string `json:"zh-CN,omitempty"`
-			} `json:"Names,omitempty"`
-		} `json:"City,omitempty"`
-		Continent struct {
-			Code      string `json:"Code,omitempty"`
-			GeoNameID int    `json:"GeoNameID,omitempty"`
-			Names     struct {
-				De   string `json:"de,omitempty"`
-				En   string `json:"en,omitempty"`
-				Es   string `json:"es,omitempty"`
-				Fr   string `json:"fr,omitempty"`
-				Ja   string `json:"ja,omitempty"`
-				PtBR string `json:"pt-BR,omitempty"`
-				Ru   string `json:"ru,omitempty"`
-				ZhCN string `json:"zh-CN,omitempty"`
-			} `json:"Names,omitempty"`
-		} `json:"Continent,omitempty"`
-		Country struct {
-			GeoNameID         int    `json:"GeoNameID,omitempty"`
-			IsInEuropeanUnion bool   `json:"IsInEuropeanUnion,omitempty"`
-			IsoCode           string `json:"IsoCode,omitempty"`
-			Names             struct {
-				De   string `json:"de,omitempty"`
-				En   string `json:"en,omitempty"`
-				Es   string `json:"es,omitempty"`
-				Fr   string `json:"fr,omitempty"`
-				Ja   string `json:"ja,omitempty"`
-				PtBR string `json:"pt-BR,omitempty"`
-				Ru   string `json:"ru,omitempty"`
-				ZhCN string `json:"zh-CN,omitempty"`
-			} `json:"Names,omitempty"`
-		} `json:"Country,omitempty"`
-		Location struct {
-			AccuracyRadius int     `json:"AccuracyRadius,omitempty"`
-			Latitude       float64 `json:"Latitude,omitempty"`
-			Longitude      float64 `json:"Longitude,omitempty"`
-			MetroCode      int     `json:"MetroCode,omitempty"`
-			TimeZone       string  `json:"TimeZone,omitempty"`
-		} `json:"Location,omitempty"`
 		Postal struct {
 			Code string `json:"Code,omitempty"`
 		} `json:"Postal,omitempty"`
-		RegisteredCountry struct {
-			GeoNameID         int    `json:"GeoNameID,omitempty"`
-			IsInEuropeanUnion bool   `json:"IsInEuropeanUnion,omitempty"`
-			IsoCode           string `json:"IsoCode,omitempty"`
-			Names             struct {
+		Continent struct {
+			Names struct {
 				De   string `json:"de,omitempty"`
 				En   string `json:"en,omitempty"`
 				Es   string `json:"es,omitempty"`
@@ -179,18 +128,25 @@ type Response struct {
 				Ru   string `json:"ru,omitempty"`
 				ZhCN string `json:"zh-CN,omitempty"`
 			} `json:"Names,omitempty"`
-		} `json:"RegisteredCountry,omitempty"`
-		RepresentedCountry struct {
-			GeoNameID         int         `json:"GeoNameID,omitempty"`
-			IsInEuropeanUnion bool        `json:"IsInEuropeanUnion,omitempty"`
-			IsoCode           string      `json:"IsoCode,omitempty"`
-			Names             interface{} `json:"Names,omitempty"`
-			Type              string      `json:"Type,omitempty"`
-		} `json:"RepresentedCountry,omitempty"`
-		Subdivisions []struct {
+			Code      string `json:"Code,omitempty"`
 			GeoNameID int    `json:"GeoNameID,omitempty"`
-			IsoCode   string `json:"IsoCode,omitempty"`
-			Names     struct {
+		} `json:"Continent,omitempty"`
+		City struct {
+			Names struct {
+				De   string `json:"de,omitempty"`
+				En   string `json:"en,omitempty"`
+				Es   string `json:"es,omitempty"`
+				Fr   string `json:"fr,omitempty"`
+				Ja   string `json:"ja,omitempty"`
+				PtBR string `json:"pt-BR,omitempty"`
+				Ru   string `json:"ru,omitempty"`
+				ZhCN string `json:"zh-CN,omitempty"`
+			} `json:"Names,omitempty"`
+			GeoNameID int `json:"GeoNameID,omitempty"`
+		} `json:"City,omitempty"`
+		Subdivisions []struct {
+			IsoCode string `json:"IsoCode,omitempty"`
+			Names   struct {
 				De string `json:"de,omitempty"`
 				En string `json:"en,omitempty"`
 				Es string `json:"es,omitempty"`
@@ -198,13 +154,57 @@ type Response struct {
 				Ja string `json:"ja,omitempty"`
 				Ru string `json:"ru,omitempty"`
 			} `json:"Names,omitempty"`
+			GeoNameID int `json:"GeoNameID,omitempty"`
 		} `json:"Subdivisions,omitempty"`
+		Country struct {
+			Names struct {
+				De   string `json:"de,omitempty"`
+				En   string `json:"en,omitempty"`
+				Es   string `json:"es,omitempty"`
+				Fr   string `json:"fr,omitempty"`
+				Ja   string `json:"ja,omitempty"`
+				PtBR string `json:"pt-BR,omitempty"`
+				Ru   string `json:"ru,omitempty"`
+				ZhCN string `json:"zh-CN,omitempty"`
+			} `json:"Names,omitempty"`
+			IsoCode           string `json:"IsoCode,omitempty"`
+			GeoNameID         int    `json:"GeoNameID,omitempty"`
+			IsInEuropeanUnion bool   `json:"IsInEuropeanUnion,omitempty"`
+		} `json:"Country,omitempty"`
+		RegisteredCountry struct {
+			Names struct {
+				De   string `json:"de,omitempty"`
+				En   string `json:"en,omitempty"`
+				Es   string `json:"es,omitempty"`
+				Fr   string `json:"fr,omitempty"`
+				Ja   string `json:"ja,omitempty"`
+				PtBR string `json:"pt-BR,omitempty"`
+				Ru   string `json:"ru,omitempty"`
+				ZhCN string `json:"zh-CN,omitempty"`
+			} `json:"Names,omitempty"`
+			IsoCode           string `json:"IsoCode,omitempty"`
+			GeoNameID         int    `json:"GeoNameID,omitempty"`
+			IsInEuropeanUnion bool   `json:"IsInEuropeanUnion,omitempty"`
+		} `json:"RegisteredCountry,omitempty"`
+		RepresentedCountry struct {
+			Names             interface{} `json:"Names,omitempty"`
+			Type              string      `json:"Type,omitempty"`
+			IsoCode           string      `json:"IsoCode,omitempty"`
+			GeoNameID         int         `json:"GeoNameID,omitempty"`
+			IsInEuropeanUnion bool        `json:"IsInEuropeanUnion,omitempty"`
+		} `json:"RepresentedCountry,omitempty"`
+		Location struct {
+			TimeZone       string  `json:"TimeZone,omitempty"`
+			Latitude       float64 `json:"Latitude,omitempty"`
+			Longitude      float64 `json:"Longitude,omitempty"`
+			AccuracyRadius int     `json:"AccuracyRadius,omitempty"`
+			MetroCode      int     `json:"MetroCode,omitempty"`
+		} `json:"Location,omitempty"`
 		Traits struct {
 			IsAnonymousProxy    bool `json:"IsAnonymousProxy,omitempty"`
 			IsSatelliteProvider bool `json:"IsSatelliteProvider,omitempty"`
 		} `json:"Traits,omitempty"`
 	} `json:"city,omitempty"`
-	License string `json:"license,omitempty"`
 }
 
 // ----------------------------------------------------------------------------
