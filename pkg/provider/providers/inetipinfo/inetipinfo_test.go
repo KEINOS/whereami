@@ -36,6 +36,25 @@ func TestGetIP_golden(t *testing.T) {
 	assert.Equal(t, expect, actual)
 }
 
+func TestGetIP_error_bad_json(t *testing.T) {
+	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if _, err := w.Write([]byte("[ipAddress]\n123.123.123.123\n")); err != nil {
+			t.Fatal(err)
+		}
+	}))
+	defer dummySrv.Close()
+
+	cli := inetipinfo.New()
+	cli.SetURL(dummySrv.URL) // Override URL to dummy server
+
+	// Test
+	ip, err := cli.GetIP()
+
+	require.Error(t, err, "malformed JSON should return an error")
+	require.Contains(t, err.Error(), "fail to parse JSON response")
+	require.Nil(t, ip, "the returned IP should be nil on error")
+}
+
 func TestGetIP_error_fail_logging(t *testing.T) {
 	dummySrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		if _, err := w.Write([]byte(`{"ipAddress": "123.123.123.123"}`)); err != nil {
