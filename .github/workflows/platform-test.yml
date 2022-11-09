@@ -1,6 +1,6 @@
 # This workflow runs the unit test (`go test ./...`) on vaious platforms,
 # such as: Linux, macOS and Windows.
-name: UnitTests
+name: PlatformTests
 
 on:
   workflow_dispatch:
@@ -17,14 +17,14 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version: '^1.17'
 
       - name: Use Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}

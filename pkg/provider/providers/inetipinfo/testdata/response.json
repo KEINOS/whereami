@@ -1,0 +1,102 @@
+{
+ "ipAddress": "123.123.123.123",
+ "asn": {
+  "AutonomousSystemNumber": 12345,
+  "AutonomousSystemOrganization": "Example Corporation"
+ },
+ "city": {
+  "City": {
+   "GeoNameID": 1848354,
+   "Names": {
+    "de": "Yokohama",
+    "en": "Yokohama",
+    "es": "Yokohama",
+    "fr": "Yokohama",
+    "ja": "横浜市",
+    "pt-BR": "Yokohama",
+    "ru": "Иокогама",
+    "zh-CN": "横滨市"
+   }
+  },
+  "Continent": {
+   "Code": "AS",
+   "GeoNameID": 6255147,
+   "Names": {
+    "de": "Asien",
+    "en": "Asia",
+    "es": "Asia",
+    "fr": "Asie",
+    "ja": "アジア",
+    "pt-BR": "Ásia",
+    "ru": "Азия",
+    "zh-CN": "亚洲"
+   }
+  },
+  "Country": {
+   "GeoNameID": 1861060,
+   "IsInEuropeanUnion": false,
+   "IsoCode": "JP",
+   "Names": {
+    "de": "Japan",
+    "en": "Japan",
+    "es": "Japón",
+    "fr": "Japon",
+    "ja": "日本",
+    "pt-BR": "Japão",
+    "ru": "Япония",
+    "zh-CN": "日本"
+   }
+  },
+  "Location": {
+   "AccuracyRadius": 20,
+   "Latitude": 35.4343,
+   "Longitude": 139.6466,
+   "MetroCode": 0,
+   "TimeZone": "Asia/Tokyo"
+  },
+  "Postal": {
+   "Code": "231-0841"
+  },
+  "RegisteredCountry": {
+   "GeoNameID": 1861060,
+   "IsInEuropeanUnion": false,
+   "IsoCode": "JP",
+   "Names": {
+    "de": "Japan",
+    "en": "Japan",
+    "es": "Japón",
+    "fr": "Japon",
+    "ja": "日本",
+    "pt-BR": "Japão",
+    "ru": "Япония",
+    "zh-CN": "日本"
+   }
+  },
+  "RepresentedCountry": {
+   "GeoNameID": 0,
+   "IsInEuropeanUnion": false,
+   "IsoCode": "",
+   "Names": null,
+   "Type": ""
+  },
+  "Subdivisions": [
+   {
+    "GeoNameID": 1860291,
+    "IsoCode": "14",
+    "Names": {
+     "de": "Präfektur Kanagawa",
+     "en": "Kanagawa",
+     "es": "Prefectura de Kanagawa",
+     "fr": "Préfecture de Kanagawa",
+     "ja": "神奈川県",
+     "ru": "Канагава"
+    }
+   }
+  ],
+  "Traits": {
+   "IsAnonymousProxy": false,
+   "IsSatelliteProvider": false
+  }
+ },
+ "license": "This product includes GeoLite2 data created by MaxMind, available from\n\u003ca href=\"https://www.maxmind.com\"\u003ehttps://www.maxmind.com\u003c/a\u003e."
+}

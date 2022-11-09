@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Update go.mod and run tests
         run: |
@@ -42,6 +42,6 @@ jobs:
           docker-compose --file ./.github/docker-compose.yml run latest
 
       - name: Create Pull Request on Change
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         with:
             token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

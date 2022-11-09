@@ -5,12 +5,9 @@ name: go1.16+
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
     branches: [ main ]
-  schedule:
-    # Runs at 16:05 UTC on day-of-month 1 (Every day-of-month 1 at AM 01:05 JST, my time)
-    # See: https://crontab.guru/
-    - cron: '5 16 1 * *'
 
 env:
   PATH_CACHE: /tmp/docker-img-arch
@@ -21,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create image tag from file hash
         uses: KEINOS/gh-action-hash-for-cache@main
@@ -34,7 +31,7 @@ jobs:
 
       - name: Enable Cache
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.PATH_CACHE }}
           key: ${{ steps.imagetag.outputs.hash }}
