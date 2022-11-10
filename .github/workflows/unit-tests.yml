@@ -1,7 +1,7 @@
 # Unit testing on vaious Go versions, such as Go 1.16 and later.
 #
 # This workflow caches images built with Docker and docker-compose to speed up its execution.
-name: go1.16+
+name: Version Tests
 
 on:
   workflow_dispatch:

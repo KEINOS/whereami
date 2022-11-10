@@ -53,25 +53,32 @@ Usage of whereami:
 
 ## Statuses
 
-[![go1.14+](https://github.com/KEINOS/whereami/actions/workflows/go-versions.yml/badge.svg)](https://github.com/KEINOS/whereami/actions/workflows/go-versions.yml)
+[![Unit Test (Versions)](https://github.com/KEINOS/whereami/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/KEINOS/whereami/actions/workflows/unit-tests.yml)
+[![Unit Tests (Platform)](https://github.com/KEINOS/whereami/actions/workflows/platform-test.yml/badge.svg)](https://github.com/KEINOS/whereami/actions/workflows/platform-test.yml)
 [![golangci-lint](https://github.com/KEINOS/whereami/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/KEINOS/whereami/actions/workflows/golangci-lint.yml)
+[![CodeQL](https://github.com/KEINOS/whereami/actions/workflows/codeQL-analysis.yml/badge.svg)](https://github.com/KEINOS/whereami/actions/workflows/codeQL-analysis.yml)
+
 [![codecov](https://codecov.io/gh/KEINOS/whereami/branch/main/graph/badge.svg?token=wwZpJLfm0l)](https://codecov.io/gh/KEINOS/whereami)
 [![Go Report Card](https://goreportcard.com/badge/github.com/KEINOS/dev-go)](https://goreportcard.com/report/github.com/KEINOS/dev-go)
-[![CodeQL](https://github.com/KEINOS/whereami/actions/workflows/codeQL-analysis.yml/badge.svg)](https://github.com/KEINOS/whereami/actions/workflows/codeQL-analysis.yml)
 
 ## Contribute
 
 [![go1.16+](https://img.shields.io/badge/Go-1.16+-blue?logo=go)](https://github.com/KEINOS/whereami/actions/workflows/go-versions.yml "Supported versions")
 [![Go Reference](https://pkg.go.dev/badge/github.com/KEINOS/whereami.svg)](https://pkg.go.dev/github.com/KEINOS/whereami/ "View document")
+
 [![Opened Issues](https://img.shields.io/github/issues/KEINOS/whereami?color=lightblue&logo=github)](https://github.com/KEINOS/whereami/issues "opened issues")
 [![PR](https://img.shields.io/github/issues-pr/KEINOS/whereami?color=lightblue&logo=github)](https://github.com/KEINOS/whereami/pulls "Pull Requests")
 
 - [GolangCI Lint](https://golangci-lint.run/) rules: [.golangci-lint.yml](https://github.com/KEINOS/whereami/blob/main/.golangci.yml)
 - To run tests in a container:
   - `docker-compose --file ./.github/docker-compose.yml run v1_17`
-  - This will run: `go test -cover -race ./...`, `golangci-lint run` and `golint ./...`
-- Branch to PR: `main`
-  - It is recommended that [DraftPR](https://github.blog/2019-02-14-introducing-draft-pull-requests/) be done first to avoid duplication of work.
+  - This will run the below on Go 1.17:
+    - `go test -cover -race ./...`
+    - `golangci-lint run`
+    - `golint ./...`
+- Branch to PR:
+  - `main`
+  - ( It is recommended that [DraftPR](https://github.blog/2019-02-14-introducing-draft-pull-requests/) be done first to avoid duplication of work )
 
 ## License
 
